@@ -5,7 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 
 # load the excel spreadsheet with all the values
-wb = load_workbook('Task Priority and Site List.xlsx')
+wb = load_workbook('Task, Priority, and Site List.xlsx')
 sheet = wb['Sheet1']
 
 # initialize a list of taskIDs and priorities and siteIDs
@@ -52,11 +52,40 @@ taskStatementURLList = []
 for ii in range(0,len(taskIDList)):
     str_taskIDList.append(str(taskIDList[ii]))
     str_priorityList.append(str(priorityList[ii]))
-    str_siteIDList.append(str(siteIDList))
+    str_siteIDList.append(str(siteIDList[ii]))
     taskStatementURLList.append('https://covanta-test.spherasolutions.com/essential-ehs/Compliance/TaskSetUpAndResult.aspx?id='
                                 + str_taskIDList[ii] + '&vldsiteid=' + str_siteIDList[ii] + '&modid=52&ReqTaskIds=&ScenTaskIds=&showclose=yes')
 
-# navigate to the first task statement URL
-driver.get(taskStatementURLList[0])
+# loop through all tasks
+for taskCounter in range(6,100):
 
+    # navigate to the task statement URL
+    driver.get(taskStatementURLList[taskCounter])
+
+    # select the Task Priority; if High->switch to Tier I,  else (it is medium or low)->switch to Tier II
+    actions3 = ActionChains(driver)
+    for ll in range(0,28):
+        actions3.send_keys(Keys.TAB)
+
+    if priorityList[taskCounter] == 'High':
+        for mm in range(0,3):
+            actions3.send_keys(Keys.ARROW_DOWN)
+    elif priorityList[taskCounter] == 'Medium':
+        for nn in range(0,2):
+            actions3.send_keys(Keys.ARROW_DOWN)
+    elif priorityList[taskCounter] == 'Low':
+        for nn in range(0,3):
+            actions3.send_keys(Keys.ARROW_DOWN)
+
+    actions3.perform()
+
+    # save the change
+    actions4 = ActionChains(driver)
+    for oo in range(0,14):
+        actions4.send_keys(Keys.TAB)
+    actions4.send_keys(Keys.ENTER)
+    actions4.perform()
+    time.sleep(2)
+
+    print(taskCounter)
 
