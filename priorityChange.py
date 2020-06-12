@@ -5,12 +5,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 
 # load the excel spreadsheet with all the values
-wb = load_workbook('Task and Priority List.xlsx')
+wb = load_workbook('Task Priority and Site List.xlsx')
 sheet = wb['Sheet1']
 
-# initialize a list of taskIDs and priorities
+# initialize a list of taskIDs and priorities and siteIDs
 taskIDList = []
 priorityList = []
+siteIDList = []
 
 # populate the taskIDList and priorityList
 for columnOfCellObjects in sheet['C2':'C15476']:
@@ -19,6 +20,9 @@ for columnOfCellObjects in sheet['C2':'C15476']:
 for columnOfCellObjects in sheet['D2':'D15476']:
     for cellObj in columnOfCellObjects:
         priorityList.append(cellObj.value)
+for columnOfCellObjects in sheet['F2':'F15476']:
+    for cellObj in columnOfCellObjects:
+        siteIDList.append(cellObj.value)
 
 # using chrome to access web
 driver = webdriver.Chrome()
