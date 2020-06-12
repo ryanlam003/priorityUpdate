@@ -5,12 +5,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 
 # load the excel spreadsheet with all the values
-wb = load_workbook('Task and Priority List.xlsx')
+wb = load_workbook('Task, Priority, and Site List.xlsx')
 sheet = wb['Sheet1']
 
-# initialize a list of taskIDs and priorities
+# initialize a list of taskIDs and priorities and siteIDs
 taskIDList = []
 priorityList = []
+siteIDList = []
 
 # populate the taskIDList and priorityList
 for columnOfCellObjects in sheet['C2':'C15476']:
@@ -19,6 +20,9 @@ for columnOfCellObjects in sheet['C2':'C15476']:
 for columnOfCellObjects in sheet['D2':'D15476']:
     for cellObj in columnOfCellObjects:
         priorityList.append(cellObj.value)
+for columnOfCellObjects in sheet['F2':'F15476']:
+    for cellObj in columnOfCellObjects:
+        siteIDList.append(cellObj.value)
 
 # using chrome to access web
 driver = webdriver.Chrome()
@@ -40,30 +44,48 @@ login_button.click()
 
 time.sleep(2)
 
-# open Task List
-driver.get('https://covanta-test.spherasolutions.com/essential-ehs/Compliance/TaskNav.aspx?tab=list&modid=52&objnum=20793&scid=11130')
-time.sleep(2)
+# prepare all of the task statement URLs
+str_taskIDList = []
+str_priorityList = []
+str_siteIDList = []
+taskStatementURLList = []
+for ii in range(0,len(taskIDList)):
+    str_taskIDList.append(str(taskIDList[ii]))
+    str_priorityList.append(str(priorityList[ii]))
+    str_siteIDList.append(str(siteIDList[ii]))
+    taskStatementURLList.append('https://covanta-test.spherasolutions.com/essential-ehs/Compliance/TaskSetUpAndResult.aspx?id='
+                                + str_taskIDList[ii] + '&vldsiteid=' + str_siteIDList[ii] + '&modid=52&ReqTaskIds=&ScenTaskIds=&showclose=yes')
 
-# CHANGE THE PRIORITY
-#for ii in range(0,len(taskIDList)):
-# search by ID
-actions = ActionChains(driver)
-for jj in range(0,8):
-    actions.send_keys(Keys.TAB)
+# loop through all tasks
+for taskCounter in range(6,100):
 
-actions.send_keys(taskIDList[3])
-actions.send_keys(Keys.ENTER)
-actions.perform()
-time.sleep(4)
+    # navigate to the task statement URL
+    driver.get(taskStatementURLList[taskCounter])
 
-# store the current window handle
-window_before = driver.window_handles[0]
+    # select the Task Priority; if High->switch to Tier I,  else (it is medium or low)->switch to Tier II
+    actions3 = ActionChains(driver)
+    for ll in range(0,28):
+        actions3.send_keys(Keys.TAB)
 
-# select and click the task statement
-driver.get('https://covanta-test.spherasolutions.com/essential-ehs/Compliance/TaskSetUpAndResult.aspx?id=14252&vldsiteid=10026&modid=52&ReqTaskIds=&ScenTaskIds=&showclose=yes')
+    if priorityList[taskCounter] == 'High':
+        for mm in range(0,3):
+            actions3.send_keys(Keys.ARROW_DOWN)
+    elif priorityList[taskCounter] == 'Medium':
+        for nn in range(0,2):
+            actions3.send_keys(Keys.ARROW_DOWN)
+    elif priorityList[taskCounter] == 'Low':
+        for nn in range(0,3):
+            actions3.send_keys(Keys.ARROW_DOWN)
 
-# switch to the new window opened
-window_after = driver.window_handles[1]
-driver.switch_to.window(window_after)
+    actions3.perform()
 
+    # save the change
+    actions4 = ActionChains(driver)
+    for oo in range(0,14):
+        actions4.send_keys(Keys.TAB)
+    actions4.send_keys(Keys.ENTER)
+    actions4.perform()
+    time.sleep(2)
+
+    print(taskCounter)
 
