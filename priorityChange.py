@@ -44,30 +44,19 @@ login_button.click()
 
 time.sleep(2)
 
-# open Task List
-driver.get('https://covanta-test.spherasolutions.com/essential-ehs/Compliance/TaskNav.aspx?tab=list&modid=52&objnum=20793&scid=11130')
-time.sleep(2)
+# prepare all of the task statement URLs
+str_taskIDList = []
+str_priorityList = []
+str_siteIDList = []
+taskStatementURLList = []
+for ii in range(0,len(taskIDList)):
+    str_taskIDList.append(str(taskIDList[ii]))
+    str_priorityList.append(str(priorityList[ii]))
+    str_siteIDList.append(str(siteIDList))
+    taskStatementURLList.append('https://covanta-test.spherasolutions.com/essential-ehs/Compliance/TaskSetUpAndResult.aspx?id='
+                                + str_taskIDList[ii] + '&vldsiteid=' + str_siteIDList[ii] + '&modid=52&ReqTaskIds=&ScenTaskIds=&showclose=yes')
 
-# CHANGE THE PRIORITY
-#for ii in range(0,len(taskIDList)):
-# search by ID
-actions = ActionChains(driver)
-for jj in range(0,8):
-    actions.send_keys(Keys.TAB)
-
-actions.send_keys(taskIDList[3])
-actions.send_keys(Keys.ENTER)
-actions.perform()
-time.sleep(4)
-
-# store the current window handle
-window_before = driver.window_handles[0]
-
-# select and click the task statement
-driver.get('https://covanta-test.spherasolutions.com/essential-ehs/Compliance/TaskSetUpAndResult.aspx?id=14252&vldsiteid=10026&modid=52&ReqTaskIds=&ScenTaskIds=&showclose=yes')
-
-# switch to the new window opened
-window_after = driver.window_handles[1]
-driver.switch_to.window(window_after)
+# navigate to the first task statement URL
+driver.get(taskStatementURLList[0])
 
 
