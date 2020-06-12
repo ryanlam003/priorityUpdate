@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import time
+from selenium.webdriver.support.select import Select
+
 
 # load the excel spreadsheet with all the values
 wb = load_workbook('Task, Priority, and Site List.xlsx')
@@ -57,23 +59,23 @@ for ii in range(0,len(taskIDList)):
                                 + str_taskIDList[ii] + '&vldsiteid=' + str_siteIDList[ii] + '&modid=52&ReqTaskIds=&ScenTaskIds=&showclose=yes')
 
 # loop through all tasks
-for taskCounter in range(118,129):
+for taskCounter in range(15475,15464,-1):
 
     # navigate to the task statement URL
-    driver.get(taskStatementURLList[taskCounter])
+    driver.get(taskStatementURLList[taskCounter-2])
 
     # select the Task Priority; if High->switch to Tier I,  else (it is medium or low)->switch to Tier II
     actions3 = ActionChains(driver)
     for ll in range(0,28):
         actions3.send_keys(Keys.TAB)
 
-    if priorityList[taskCounter] == 'High':
+    if priorityList[taskCounter-2] == 'High':
         for mm in range(0,3):
             actions3.send_keys(Keys.ARROW_DOWN)
-    elif priorityList[taskCounter] == 'Medium':
+    elif priorityList[taskCounter-2] == 'Medium':
         for nn in range(0,2):
             actions3.send_keys(Keys.ARROW_DOWN)
-    elif priorityList[taskCounter] == 'Low':
+    elif priorityList[taskCounter-2] == 'Low':
         for nn in range(0,3):
             actions3.send_keys(Keys.ARROW_DOWN)
 
@@ -86,3 +88,5 @@ for taskCounter in range(118,129):
     actions4.send_keys(Keys.ENTER)
     actions4.perform()
     time.sleep(2)
+
+
